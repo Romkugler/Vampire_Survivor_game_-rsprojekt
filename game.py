@@ -4,7 +4,7 @@
 # ✅Make a ground 
 # ✅Make a player 
 # ✅Move things around
-# Make enemies
+# ✅Make enemies
 # Make player attack
 # Noice map
 
@@ -17,9 +17,10 @@ pg.init()
 
 ## Slime class ##
 class Slime:
-    def __init__(self, x, y, health=100):
+    def __init__(self, x, y, facing="r", health=100):
         self.x = x 
         self.y = y
+        self.facing = facing
         self.health = health
 slimes = []
 
@@ -77,6 +78,9 @@ pg.display.set_caption("Vampire Survivor Game")
 grass_x = WIDTH / 2 - WIDTH
 grass_y = HEIGHT / 2 - HEIGHT
 tick = 0
+slime_speed = 1
+player_coords = (WIDTH/2 - (player_size/2 + player_size), HEIGHT/2 - (player_size/2 + player_size))
+
 
 # Set up the clock for a decent framerate
 clock = pg.time.Clock()
@@ -91,7 +95,8 @@ while running:
         if event.type == pg.QUIT:
             running = False
     keys = pg.key.get_pressed()
-    speed = 3
+
+    speed = 5
     if keys[pg.K_w]:
         grass_y += speed
         player_moving = "w"
@@ -117,6 +122,7 @@ while running:
 
     ## Update everything ##
 
+    # Slime spawn #
     if len(slimes) < 5:
         silme_amount = 5
         for i in range(silme_amount):
@@ -125,9 +131,20 @@ while running:
             s = Slime(slime_spawnpos_x, slime_spawnpos_y)
             s = slimes.append(s)
 
-
-    
-
+    # Slime movement #
+    for s in slimes:
+        direction_x = player_coords[0] - s.x
+        direction_y = player_coords[1] - s.y
+        distance = (direction_x**2 + direction_y**2) ** 0.5
+        if distance != 0:
+            direction_x /= distance
+            direction_y /= distance
+        s.x += slime_speed * direction_x
+        s.y += slime_speed * direction_y
+        if direction_x < 0:
+            s.facing = "l"
+        else:
+            s.facing = "r"
 
 
 
@@ -137,20 +154,23 @@ while running:
 
     # Player #
     if player_moving == "w":
-        screen.blit(player_run_w[(tick//10%8)], (WIDTH/2-player_size, HEIGHT/2-player_size))
+        screen.blit(player_run_w[(tick//10%8)], player_coords)
     elif player_moving == "a":
-        screen.blit(player_run_a[(tick//10%8)], (WIDTH/ 2-player_size, HEIGHT / 2-player_size))
+        screen.blit(player_run_a[(tick//10%8)], player_coords)
     elif player_moving == "s":
-        screen.blit(player_run_s[(tick//10%8)], (WIDTH / 2-player_size, HEIGHT / 2-player_size))
+        screen.blit(player_run_s[(tick//10%8)], player_coords)
     elif player_moving == "d":
-        screen.blit(player_run_d[(tick//10%8)], (WIDTH / 2-player_size, HEIGHT / 2-player_size))
+        screen.blit(player_run_d[(tick//10%8)], player_coords)
     else:
-        screen.blit(player_idle[(tick//15%8)], (WIDTH / 2-player_size, HEIGHT / 2-player_size))
+        screen.blit(player_idle[(tick//15%8)], player_coords)
 
 
     # Slime #
     for s in slimes:
-        screen.blit(slime_run_r[(tick//10%6)], (s.x, s.y))
+        if s.facing == "l":
+            screen.blit(slime_run_l[(tick//10%6)], (s.x, s.y))
+        else:
+            screen.blit(slime_run_r[(tick//10%6)], (s.x, s.y))
 
     # Update the display
     pg.display.flip()
