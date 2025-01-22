@@ -101,7 +101,8 @@ tick = 0
 slime_speed = 1
 player_coords = (WIDTH/2 - (player_size*1.5), HEIGHT/2 - (player_size*1.5)) # 1.5 = player_size/2 + player_size
 player_attacking = False
-attacktime = 60
+attackspeed = 8
+attacktime = attackspeed*6
 
 
 
@@ -177,22 +178,22 @@ while running:
                 direction_x = player_coords[0] - s.x
                 direction_y = player_coords[1] - s.y
                 distance = (direction_x**2 + direction_y**2) ** 0.5
-                if distance <= 50:
+                if distance <= 100:
                     s.alive = False
         attacktime += 1
-        if attacktime >= 60:
+        if attacktime >= attackspeed*6:
             player_attacking = False
             attacktime = 0
 
     
 
 
-
-
     ## Draw everything ##
     screen.fill((0, 0, 0))
-    screen.blit(grass, (grass_x, grass_y))
-
+    for x in range(-1,1):
+        for y in range(-1,1):
+            screen.blit(grass, (grass_x%grass.get_width() + grass.get_width()*x, grass_y%grass.get_height() + grass.get_height()*y))
+            
     # Slime #
     for s in slimes:
         if s.alive:
@@ -210,27 +211,27 @@ while running:
     # Player #
     if player_moving == "w":
         if player_attacking:
-            screen.blit(player_attack_w[(attacktime//10%6)], player_coords)
+            screen.blit(player_attack_w[(attacktime//attackspeed%6)], player_coords)
         else:
             screen.blit(player_run_w[(tick//10%8)], player_coords)
     elif player_moving == "a":
         if player_attacking:
-            screen.blit(player_attack_a[(attacktime//10%6)], player_coords)
+            screen.blit(player_attack_a[(attacktime//attackspeed%6)], player_coords)
         else:
             screen.blit(player_run_a[(tick//10%8)], player_coords)
     elif player_moving == "s":
         if player_attacking:
-            screen.blit(player_attack_s[(attacktime//10%6)], player_coords)
+            screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
         else:
             screen.blit(player_run_s[(tick//10%8)], player_coords)
     elif player_moving == "d":
         if player_attacking:
-            screen.blit(player_attack_d[(attacktime//10%6)], player_coords)
+            screen.blit(player_attack_d[(attacktime//attackspeed%6)], player_coords)
         else:
             screen.blit(player_run_d[(tick//10%8)], player_coords)
     else:
         if player_attacking:
-            screen.blit(player_attack_s[(attacktime//10%6)], player_coords)
+            screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
         else:
             screen.blit(player_idle[(tick//15%8)], player_coords)
 
