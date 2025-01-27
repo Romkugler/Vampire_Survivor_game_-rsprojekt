@@ -107,7 +107,8 @@ attackspeed = 8
 attacktime = attackspeed*6
 slime_health = 100
 attack_range = 100
-player_damage = 1
+player_damage = 25
+
 
 # Set up the clock for a decent framerate
 clock = pg.time.Clock()
@@ -121,8 +122,11 @@ while running:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
+        if event.type == pg.KEYDOWN: # cant hold down space to attack
+            if event.key == pg.K_SPACE:
+                player_attacking = True
     keys = pg.key.get_pressed()
-
+    
     speed = 5
     if keys[pg.K_w]:
         grass_y += speed
@@ -145,8 +149,8 @@ while running:
         for s in slimes:
             s.x -= speed
     if keys[pg.K_SPACE]:
-        player_attacking = True
-
+        #player_attacking = True 
+        pass
     ## Update everything ##
 
     # Slime spawn #
@@ -198,11 +202,9 @@ while running:
                 s.health -= player_damage
         if s.health <= 0:
             s.alive = False
-
-    print(slimes[0].health,"health")
-    print(slimes[0].hit,"hit")
-    print(slimes[0].hit_timer,"hit timer")
-
+    
+    # Player damage #
+    
 
 
     ## Draw everything ##
@@ -210,6 +212,8 @@ while running:
     for x in range(-1,1):
         for y in range(-1,1):
             screen.blit(grass, (grass_x%grass.get_width() + grass.get_width()*x, grass_y%grass.get_height() + grass.get_height()*y))
+
+    pg.draw.circle(screen, (20,150,20), (WIDTH/2,HEIGHT/2),attack_range)
 
     # Slime #
     for s in slimes:
@@ -221,14 +225,11 @@ while running:
                     screen.blit(slime_run_l[(tick//10%6)], (s.x, s.y))
                 else:
                     screen.blit(slime_run_r[(tick//10%6)], (s.x, s.y))
-
-
         else:
             screen.blit(slime_death[(s.death_timer//10%10)], (s.x, s.y))
             s.death_timer += 1
             if s.death_timer >= 100:
                 slimes.remove(s)
-
 
     # Player #
     if player_moving == "w":
