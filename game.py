@@ -5,8 +5,8 @@
 # ✅Make a player 
 # ✅Move things around
 # ✅Make enemies
-# Make player attack
-# Noice map
+# ✅Make player attack
+# Make player die
 
 import pygame as pg
 import random 
@@ -16,13 +16,15 @@ pg.init()
 
 ## Slime class ##
 class Slime:
-    def __init__(self, x, y, death_timer=0, alive=True, facing="r", health=100):
+    def __init__(self, x, y, hit_timer=0, hit=False, death_timer=0, alive=True, facing="r", health=100):
         self.x = x 
         self.y = y
         self.facing = facing
         self.health = health
         self.alive = alive
         self.death_timer = death_timer
+        self.hit = hit
+        self.hit_timer = hit_timer
 slimes = []
 
 ## Transforms sprtie ##
@@ -103,8 +105,9 @@ player_coords = (WIDTH/2 - (player_size*1.5), HEIGHT/2 - (player_size*1.5)) # 1.
 player_attacking = False
 attackspeed = 8
 attacktime = attackspeed*6
-
-
+slime_health = 100
+attack_range = 100
+player_damage = 1
 
 # Set up the clock for a decent framerate
 clock = pg.time.Clock()
@@ -171,6 +174,7 @@ while running:
             else:
                 s.facing = "r"
     
+
     # Player attack #
     if player_attacking:
         for s in slimes:
@@ -178,14 +182,27 @@ while running:
                 direction_x = player_coords[0] - s.x
                 direction_y = player_coords[1] - s.y
                 distance = (direction_x**2 + direction_y**2) ** 0.5
-                if distance <= 100:
-                    s.alive = False
+                if distance <= attack_range:
+                    s.hit = True
         attacktime += 1
         if attacktime >= attackspeed*6:
             player_attacking = False
             attacktime = 0
 
-    
+    # Slime damage #
+    for s in slimes:
+        if s.hit == True:
+            s.hit_timer = attacktime
+            if s.hit_timer == 1:
+                s.hit = False
+                s.health -= player_damage
+        if s.health <= 0:
+            s.alive = False
+
+    print(slimes[0].health,"health")
+    print(slimes[0].hit,"hit")
+    print(slimes[0].hit_timer,"hit timer")
+
 
 
     ## Draw everything ##
@@ -193,14 +210,19 @@ while running:
     for x in range(-1,1):
         for y in range(-1,1):
             screen.blit(grass, (grass_x%grass.get_width() + grass.get_width()*x, grass_y%grass.get_height() + grass.get_height()*y))
-            
+
     # Slime #
     for s in slimes:
         if s.alive:
-            if s.facing == "l":
-                screen.blit(slime_run_l[(tick//10%6)], (s.x, s.y))
+            if s.hit_timer in range(2,10):
+                screen.blit(slime_death[2], (s.x, s.y))
             else:
-                screen.blit(slime_run_r[(tick//10%6)], (s.x, s.y))
+                if s.facing == "l":
+                    screen.blit(slime_run_l[(tick//10%6)], (s.x, s.y))
+                else:
+                    screen.blit(slime_run_r[(tick//10%6)], (s.x, s.y))
+
+
         else:
             screen.blit(slime_death[(s.death_timer//10%10)], (s.x, s.y))
             s.death_timer += 1
