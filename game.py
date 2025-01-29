@@ -108,7 +108,13 @@ attacktime = attackspeed*6
 slime_health = 100
 attack_range = 100
 player_damage = 25
-
+slime_damage = 10
+player_health = 100
+player_health_max = 100
+health_bar_color = (200,20,20)
+slime_attack_range = 40
+player_immune = False
+player_immune_timer = 0
 
 # Set up the clock for a decent framerate
 clock = pg.time.Clock()
@@ -151,8 +157,9 @@ while running:
     if keys[pg.K_SPACE]:
         #player_attacking = True 
         pass
-    ## Update everything ##
 
+
+    ## Update everything ##
     # Slime spawn #
     slime_amount = 5
     if len(slimes) != slime_amount:
@@ -204,8 +211,22 @@ while running:
             s.alive = False
     
     # Player damage #
-    
+    if player_immune == False:
+        for s in slimes:
+            if s.alive:
+                direction_x = player_coords[0] - s.x
+                direction_y = player_coords[1] - s.y
+                distance = (direction_x**2 + direction_y**2) ** 0.5
+                if distance <= slime_attack_range:
+                    player_health -= 10
+                    player_immune = True
 
+    # Player immunity #
+    if player_immune:
+        player_immune_timer += 1
+        if player_immune_timer >= 60:
+            player_immune = False
+            player_immune_timer = 0
 
     ## Draw everything ##
     screen.fill((0, 0, 0))
@@ -213,7 +234,7 @@ while running:
         for y in range(-1,1):
             screen.blit(grass, (grass_x%grass.get_width() + grass.get_width()*x, grass_y%grass.get_height() + grass.get_height()*y))
 
-    pg.draw.circle(screen, (20,150,20), (WIDTH/2,HEIGHT/2),attack_range)
+    #pg.draw.circle(screen, (20,150,20), (WIDTH/2,HEIGHT/2),attack_range)
 
     # Slime #
     for s in slimes:
@@ -232,31 +253,66 @@ while running:
                 slimes.remove(s)
 
     # Player #
-    if player_moving == "w":
-        if player_attacking:
-            screen.blit(player_attack_w[(attacktime//attackspeed%6)], player_coords)
-        else:
-            screen.blit(player_run_w[(tick//10%8)], player_coords)
-    elif player_moving == "a":
-        if player_attacking:
-            screen.blit(player_attack_a[(attacktime//attackspeed%6)], player_coords)
-        else:
-            screen.blit(player_run_a[(tick//10%8)], player_coords)
-    elif player_moving == "s":
-        if player_attacking:
-            screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
-        else:
-            screen.blit(player_run_s[(tick//10%8)], player_coords)
-    elif player_moving == "d":
-        if player_attacking:
-            screen.blit(player_attack_d[(attacktime//attackspeed%6)], player_coords)
-        else:
-            screen.blit(player_run_d[(tick//10%8)], player_coords)
+    if player_immune:
+        if tick%2 == 0:
+            if player_moving == "w":
+                if player_attacking:
+                    screen.blit(player_attack_w[(attacktime//attackspeed%6)], player_coords)
+                else:
+                    screen.blit(player_run_w[(tick//10%8)], player_coords)
+            elif player_moving == "a":
+                if player_attacking:
+                    screen.blit(player_attack_a[(attacktime//attackspeed%6)], player_coords)
+                else:
+                    screen.blit(player_run_a[(tick//10%8)], player_coords)
+            elif player_moving == "s":
+                if player_attacking:
+                    screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
+                else:
+                    screen.blit(player_run_s[(tick//10%8)], player_coords)
+            elif player_moving == "d":
+                if player_attacking:
+                    screen.blit(player_attack_d[(attacktime//attackspeed%6)], player_coords)
+                else:
+                    screen.blit(player_run_d[(tick//10%8)], player_coords)
+            else:
+                if player_attacking:
+                    screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
+                else:
+                    screen.blit(player_idle[(tick//15%8)], player_coords)
     else:
-        if player_attacking:
-            screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
-        else:
-            screen.blit(player_idle[(tick//15%8)], player_coords)
+            if player_moving == "w":
+                if player_attacking:
+                    screen.blit(player_attack_w[(attacktime//attackspeed%6)], player_coords)
+                else:
+                    screen.blit(player_run_w[(tick//10%8)], player_coords)
+            elif player_moving == "a":
+                if player_attacking:
+                    screen.blit(player_attack_a[(attacktime//attackspeed%6)], player_coords)
+                else:
+                    screen.blit(player_run_a[(tick//10%8)], player_coords)
+            elif player_moving == "s":
+                if player_attacking:
+                    screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
+                else:
+                    screen.blit(player_run_s[(tick//10%8)], player_coords)
+            elif player_moving == "d":
+                if player_attacking:
+                    screen.blit(player_attack_d[(attacktime//attackspeed%6)], player_coords)
+                else:
+                    screen.blit(player_run_d[(tick//10%8)], player_coords)
+            else:
+                if player_attacking:
+                    screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
+                else:
+                    screen.blit(player_idle[(tick//15%8)], player_coords)
+
+    # Healht bar #
+    draw_health = pg.Rect(10, 10, player_health*4, 20)
+    draw_health_back = pg.Rect(5, 5, player_health_max*4+10, 30)
+
+    pg.draw.rect(screen, (0,0,0), draw_health_back)
+    pg.draw.rect(screen, health_bar_color, draw_health)
 
 
 
