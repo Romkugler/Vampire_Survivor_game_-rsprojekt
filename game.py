@@ -14,6 +14,11 @@ import random
 # Initialize Pygame
 pg.init()
 
+# Set up display
+WIDTH, HEIGHT = 800, 800
+screen = pg.display.set_mode((WIDTH, HEIGHT))
+pg.display.set_caption("Vampire Survivor Game")
+
 ## Slime class ##
 class Slime:
     def __init__(self, x, y, hit_timer=0, hit=False, death_timer=0, alive=True, facing="r", health=100):
@@ -46,6 +51,8 @@ player_run = pg.image.load("assets/sprites/Player_Run.png")
 player_attack = pg.image.load("assets/sprites/Player_Attack.png")
 slime_run = pg.image.load("assets/sprites/Slime_Run.png")
 slime_death = pg.image.load("assets/sprites/Slime_Death.png")
+player_death = pg.image.load("assets/sprites/Player_Death.png")
+death_screen = pg.image.load("assets/sprites/death_screen.png")
 
 # Player sprites
 player_size = 64
@@ -76,6 +83,11 @@ for i in range(len(player_attack_sprites)//4):
     player_attack_d.append(player_attack_sprites[i+12])
     player_attack_w.append(player_attack_sprites[i+18])
 
+player_death_sprites = load_sprite_sheet(player_death, player_size, player_size)
+player_death = []
+for i in range(len(player_death_sprites)//4):
+    player_death.append(player_death_sprites[i])
+
 # Slime sprites
 slime_size = 64
 slime_run_sprites = load_sprite_sheet(slime_run, slime_size, slime_size)
@@ -90,31 +102,37 @@ slime_death = []
 for i in range(len(slime_death_sprites)//4):
     slime_death.append(slime_death_sprites[i+10])
 
-
-# Set up display
-WIDTH, HEIGHT = 800, 800
-screen = pg.display.set_mode((WIDTH, HEIGHT))
-pg.display.set_caption("Vampire Survivor Game")
+# death screen
+death_screen = pg.transform.scale(death_screen,(WIDTH,180)) 
 
 # Set up variables
 grass_x = WIDTH / 2 - WIDTH
 grass_y = HEIGHT / 2 - HEIGHT
+
 tick = 0
-slime_speed = 1
-player_coords = (WIDTH/2 - (player_size*1.5), HEIGHT/2 - (player_size*1.5)) # 1.5 = player_size/2 + player_size
-player_attacking = False
-attackspeed = 8
-attacktime = attackspeed*6
+
 slime_health = 100
 attack_range = 100
-player_damage = 25
 slime_damage = 10
+slime_attack_range = 40
+slime_speed = 1
+
+player_coords = (WIDTH/2 - (player_size*1.5), HEIGHT/2 - (player_size*1.5)) # 1.5 = player_size/2 + player_size
+attackspeed = 8
+attacktime = attackspeed*6
+player_attacking = False
+player_damage = 25
+player_immune = False
+player_immune_timer = 0
+player_dead = False
+player_dead_time = 0
 player_health = 100
 player_health_max = 100
 health_bar_color = (200,20,20)
-slime_attack_range = 40
-player_immune = False
-player_immune_timer = 0
+speed = 5
+
+
+alpha = 0
 
 # Set up the clock for a decent framerate
 clock = pg.time.Clock()
@@ -133,31 +151,30 @@ while running:
                 player_attacking = True
     keys = pg.key.get_pressed()
     
-    speed = 5
-    if keys[pg.K_w]:
-        grass_y += speed
-        player_moving = "w"
-        for s in slimes:
-            s.y += speed
-    if keys[pg.K_s]:
-        grass_y -= speed
-        player_moving = "s"
-        for s in slimes:
-            s.y -= speed
-    if keys[pg.K_a]:
-        grass_x += speed
-        player_moving = "a"
-        for s in slimes:
-            s.x += speed
-    if keys[pg.K_d]:
-        grass_x -= speed
-        player_moving = "d"
-        for s in slimes:
-            s.x -= speed
-    if keys[pg.K_SPACE]:
-        #player_attacking = True 
-        pass
-
+    if player_dead == False:
+        if keys[pg.K_w]:
+            grass_y += speed
+            player_moving = "w"
+            for s in slimes:
+                s.y += speed
+        if keys[pg.K_s]:
+            grass_y -= speed
+            player_moving = "s"
+            for s in slimes:
+                s.y -= speed
+        if keys[pg.K_a]:
+            grass_x += speed
+            player_moving = "a"
+            for s in slimes:
+                s.x += speed
+        if keys[pg.K_d]:
+            grass_x -= speed
+            player_moving = "d"
+            for s in slimes:
+                s.x -= speed
+        if keys[pg.K_SPACE]:
+            #player_attacking = True 
+            pass
 
     ## Update everything ##
     # Slime spawn #
@@ -227,6 +244,15 @@ while running:
         if player_immune_timer >= 60:
             player_immune = False
             player_immune_timer = 0
+    
+    # Player death #
+    if player_health <= 0:
+        player_dead = True
+        player_dead_time += 1
+    
+    if player_dead:
+        alpha += 1
+        death_screen.set_alpha(alpha)
 
     ## Draw everything ##
     screen.fill((0, 0, 0))
@@ -253,59 +279,67 @@ while running:
                 slimes.remove(s)
 
     # Player #
-    if player_immune:
-        if tick%2 == 0:
-            if player_moving == "w":
-                if player_attacking:
-                    screen.blit(player_attack_w[(attacktime//attackspeed%6)], player_coords)
-                else:
-                    screen.blit(player_run_w[(tick//10%8)], player_coords)
-            elif player_moving == "a":
-                if player_attacking:
-                    screen.blit(player_attack_a[(attacktime//attackspeed%6)], player_coords)
-                else:
-                    screen.blit(player_run_a[(tick//10%8)], player_coords)
-            elif player_moving == "s":
-                if player_attacking:
-                    screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
-                else:
-                    screen.blit(player_run_s[(tick//10%8)], player_coords)
-            elif player_moving == "d":
-                if player_attacking:
-                    screen.blit(player_attack_d[(attacktime//attackspeed%6)], player_coords)
-                else:
-                    screen.blit(player_run_d[(tick//10%8)], player_coords)
-            else:
-                if player_attacking:
-                    screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
-                else:
-                    screen.blit(player_idle[(tick//15%8)], player_coords)
+    if player_dead:
+        if player_dead_time >= 70:
+            screen.blit(player_death[6], player_coords)
+            screen.blit(death_screen, (0,HEIGHT/2 - death_screen.get_height()/2))
+        else:
+            screen.blit(player_death[(player_dead_time//10%7)], player_coords)
+
     else:
-            if player_moving == "w":
-                if player_attacking:
-                    screen.blit(player_attack_w[(attacktime//attackspeed%6)], player_coords)
+        if player_immune:
+            if tick%2 == 0:
+                if player_moving == "w":
+                    if player_attacking:
+                        screen.blit(player_attack_w[(attacktime//attackspeed%6)], player_coords)
+                    else:
+                        screen.blit(player_run_w[(tick//10%8)], player_coords)
+                elif player_moving == "a":
+                    if player_attacking:
+                        screen.blit(player_attack_a[(attacktime//attackspeed%6)], player_coords)
+                    else:
+                        screen.blit(player_run_a[(tick//10%8)], player_coords)
+                elif player_moving == "s":
+                    if player_attacking:
+                        screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
+                    else:
+                        screen.blit(player_run_s[(tick//10%8)], player_coords)
+                elif player_moving == "d":
+                    if player_attacking:
+                        screen.blit(player_attack_d[(attacktime//attackspeed%6)], player_coords)
+                    else:
+                        screen.blit(player_run_d[(tick//10%8)], player_coords)
                 else:
-                    screen.blit(player_run_w[(tick//10%8)], player_coords)
-            elif player_moving == "a":
-                if player_attacking:
-                    screen.blit(player_attack_a[(attacktime//attackspeed%6)], player_coords)
+                    if player_attacking:
+                        screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
+                    else:
+                        screen.blit(player_idle[(tick//15%8)], player_coords)
+        else:
+                if player_moving == "w":
+                    if player_attacking:
+                        screen.blit(player_attack_w[(attacktime//attackspeed%6)], player_coords)
+                    else:
+                        screen.blit(player_run_w[(tick//10%8)], player_coords)
+                elif player_moving == "a":
+                    if player_attacking:
+                        screen.blit(player_attack_a[(attacktime//attackspeed%6)], player_coords)
+                    else:
+                        screen.blit(player_run_a[(tick//10%8)], player_coords)
+                elif player_moving == "s":
+                    if player_attacking:
+                        screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
+                    else:
+                        screen.blit(player_run_s[(tick//10%8)], player_coords)
+                elif player_moving == "d":
+                    if player_attacking:
+                        screen.blit(player_attack_d[(attacktime//attackspeed%6)], player_coords)
+                    else:
+                        screen.blit(player_run_d[(tick//10%8)], player_coords)
                 else:
-                    screen.blit(player_run_a[(tick//10%8)], player_coords)
-            elif player_moving == "s":
-                if player_attacking:
-                    screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
-                else:
-                    screen.blit(player_run_s[(tick//10%8)], player_coords)
-            elif player_moving == "d":
-                if player_attacking:
-                    screen.blit(player_attack_d[(attacktime//attackspeed%6)], player_coords)
-                else:
-                    screen.blit(player_run_d[(tick//10%8)], player_coords)
-            else:
-                if player_attacking:
-                    screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
-                else:
-                    screen.blit(player_idle[(tick//15%8)], player_coords)
+                    if player_attacking:
+                        screen.blit(player_attack_s[(attacktime//attackspeed%6)], player_coords)
+                    else:
+                        screen.blit(player_idle[(tick//15%8)], player_coords)
 
     # Healht bar #
     draw_health = pg.Rect(10, 10, player_health*4, 20)
@@ -313,7 +347,6 @@ while running:
 
     pg.draw.rect(screen, (0,0,0), draw_health_back)
     pg.draw.rect(screen, health_bar_color, draw_health)
-
 
 
     # Update the display
