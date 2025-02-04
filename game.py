@@ -33,31 +33,10 @@ class Slime:
 slimes = []
 
 def render_player_movement(player_moving, player_attacking, attacktime, attackspeed, tick, player_coords):
-    if player_moving == "w":
-        if player_attacking:
-            screen.blit(player_attack_w[(attacktime // attackspeed % 6)], player_coords)
-        else:
-            screen.blit(player_run_w[(tick // 10 % 8)], player_coords)
-    elif player_moving == "a":
-        if player_attacking:
-            screen.blit(player_attack_a[(attacktime // attackspeed % 6)], player_coords)
-        else:
-            screen.blit(player_run_a[(tick // 10 % 8)], player_coords)
-    elif player_moving == "s":
-        if player_attacking:
-            screen.blit(player_attack_s[(attacktime // attackspeed % 6)], player_coords)
-        else:
-            screen.blit(player_run_s[(tick // 10 % 8)], player_coords)
-    elif player_moving == "d":
-        if player_attacking:
-            screen.blit(player_attack_d[(attacktime // attackspeed % 6)], player_coords)
-        else:
-            screen.blit(player_run_d[(tick // 10 % 8)], player_coords)
+    if player_attacking:
+        screen.blit(player_dict_attack[player_moving][(attacktime // attackspeed % 6)], player_coords)
     else:
-        if player_attacking:
-            screen.blit(player_attack_s[(attacktime // attackspeed % 6)], player_coords)
-        else:
-            screen.blit(player_idle[(tick // 15 % 8)], player_coords)
+        screen.blit(player_dict_run[player_moving][(tick // 10 % 8)], player_coords)
 
 ## Transforms sprtie ##
 def load_sprite_sheet(sheet, sprite_width, sprite_height):
@@ -131,6 +110,23 @@ for i in range(len(slime_death_sprites)//4):
 
 # death screen
 death_screen = pg.transform.scale(death_screen,(WIDTH,180)) 
+
+# Player dictionary to the animation
+player_dict_attack = {
+    "w": player_attack_w,
+    "a": player_attack_a,
+    "s": player_attack_s,
+    "d": player_attack_d,
+    "idle": player_idle
+}
+
+player_dict_run = {
+    "w": player_run_w,
+    "a": player_run_a,
+    "s": player_run_s,
+    "d": player_run_d,
+    "idle": player_idle
+}
 
 # Set up variables
 grass_x = WIDTH / 2 - WIDTH
