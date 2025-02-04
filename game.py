@@ -1,18 +1,20 @@
 # Vampire Survivor game
-#
-# TODO
-# ✅Make a ground 
-# ✅Make a player 
-# ✅Move things around
-# ✅Make enemies
-# ✅Make player attack
-# Make player die
 
 import pygame as pg
 import random 
 
 # Initialize Pygame
 pg.init()
+pg.mixer.init()
+
+# Sound effects
+death_sound = pg.mixer.Sound("assets/sounds/death_sound.mp3")
+death_sound.set_volume(0.5)
+hurt_sounds = []
+for i in range(3):
+    hurt_sound = pg.mixer.Sound(f"assets/sounds/hurt_sound{i+1}.wav")
+    hurt_sound.set_volume(0.5)
+    hurt_sounds.append(hurt_sound)
 
 # Set up display
 WIDTH, HEIGHT = 800, 800
@@ -40,11 +42,10 @@ def render_player_movement(player_moving, player_attacking, attacktime, attacksp
 
 ## Transforms sprtie ##
 def load_sprite_sheet(sheet, sprite_width, sprite_height):
-    sheet_rect = sheet.get_rect()
     sprites = []
-    for y in range(0, sheet_rect.height, sprite_height):
-        for x in range(0, sheet_rect.width, sprite_width):
-            rect = pg.Rect(x, y, sprite_width, sprite_height)
+    for y in range(0, sheet.get_height(), sprite_height):
+        for x in range(0, sheet.get_width(), sprite_width):
+            rect = (x, y, sprite_width, sprite_height)
             image = sheet.subsurface(rect)
             image = pg.transform.scale(image, (sprite_width * 3, sprite_height * 3))
             sprites.append(image)
@@ -60,8 +61,9 @@ slime_death = pg.image.load("assets/sprites/Slime_Death.png")
 player_death = pg.image.load("assets/sprites/Player_Death.png")
 death_screen = pg.image.load("assets/sprites/death_screen.png")
 
+
 # Player sprites
-player_size = 64
+player_size = player_run.get_width()//8
 player_idle_sprites = load_sprite_sheet(player_idle, player_size, player_size)
 player_idle = []
 for i in range(len(player_idle_sprites)//4):
@@ -95,7 +97,7 @@ for i in range(len(player_death_sprites)//4):
     player_death.append(player_death_sprites[i])
 
 # Slime sprites
-slime_size = 64
+slime_size = slime_run.get_width()//6
 slime_run_sprites = load_sprite_sheet(slime_run, slime_size, slime_size)
 slime_run_r = []
 slime_run_l = []
@@ -154,7 +156,6 @@ player_health_max = 100
 health_bar_color = (200,20,20)
 speed = 5
 
-
 alpha = 0
 
 # Set up the clock for a decent framerate
@@ -172,6 +173,9 @@ while running:
         if event.type == pg.KEYDOWN: # cant hold down space to attack
             if event.key == pg.K_SPACE:
                 player_attacking = True
+            if event.key == pg.K_ESCAPE:
+                running = False
+        
     keys = pg.key.get_pressed()
     
     if player_dead == False:
@@ -225,7 +229,6 @@ while running:
             else:
                 s.facing = "r"
     
-
     # Player attack #
     if player_attacking:
         for s in slimes:
@@ -260,6 +263,8 @@ while running:
                 if distance <= slime_attack_range:
                     player_health -= 10
                     player_immune = True
+                    if player_dead == False:
+                        hurt_sounds[random.randint(0,2)].play()
 
     # Player immunity #
     if player_immune:
@@ -273,6 +278,9 @@ while running:
         player_dead = True
         player_dead_time += 1
     
+    if player_dead_time == 4:
+        death_sound.play()
+
     if player_dead:
         alpha += 1
         death_screen.set_alpha(alpha)
@@ -330,4 +338,3 @@ while running:
     tick += 1
 # Quit pg
 pg.quit()
-
