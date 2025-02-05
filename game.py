@@ -119,7 +119,7 @@ player_dict_attack = {
     "a": player_attack_a,
     "s": player_attack_s,
     "d": player_attack_d,
-    "idle": player_idle
+    "idle": player_attack_s
 }
 
 player_dict_run = {
@@ -137,15 +137,16 @@ grass_y = HEIGHT / 2 - HEIGHT
 tick = 0
 
 slime_health = 100
-attack_range = 100
 slime_damage = 10
-slime_attack_range = 40
+slime_attack_range = 45
 slime_speed = 1
+slime_amount = 10
 
 player_coords = (WIDTH/2 - (player_size*1.5), HEIGHT/2 - (player_size*1.5)) # 1.5 = player_size/2 + player_size
+attack_range = 100
 attackspeed = 8
 attacktime = attackspeed*6
-player_attacking = False
+player_attacking = True
 player_damage = 25
 player_immune = False
 player_immune_timer = 0
@@ -204,13 +205,28 @@ while running:
             pass
 
     ## Update everything ##
+    ranint1 = random.randint(0, 1)
+    if ranint1 == 0:
+        ranint2 = 1
+    else:
+        ranint2 = 0
+
+
     # Slime spawn #
-    slime_amount = 5
     if len(slimes) != slime_amount:
         for i in range(slime_amount-len(slimes)):
             slime_spawnpos_x = random.randint(0, WIDTH)
             slime_spawnpos_y = random.randint(0, HEIGHT)
-            s = Slime(slime_spawnpos_x, slime_spawnpos_y)
+            if random.randint(0, 1) == 0:
+                if random.randint(0, 1) == 0:
+                    s = Slime(WIDTH*0 - 2*slime_size, slime_spawnpos_y)
+                else:
+                    s = Slime(WIDTH*1 -slime_size, slime_spawnpos_y)
+            else:
+                if random.randint(0, 1) == 0:
+                    s = Slime(slime_spawnpos_x, HEIGHT*0 - 2*slime_size)
+                else:
+                    s = Slime(slime_spawnpos_x, HEIGHT*1 - slime_size)
             s = slimes.append(s)
 
     # Slime movement #
@@ -264,7 +280,7 @@ while running:
                     player_health -= 10
                     player_immune = True
                     if player_dead == False:
-                        hurt_sounds[random.randint(0,2)].play()
+                        hurt_sounds[random.randint(0, len(hurt_sounds)-1)].play()
 
     # Player immunity #
     if player_immune:
