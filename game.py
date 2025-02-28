@@ -52,7 +52,7 @@ def load_sprite_sheet(sheet, sprite_width, sprite_height):
     return sprites
 
 # Upload #
-grass = pg.image.load("assets/sprites/grass.png")
+grass_img = pg.image.load("assets/sprites/grass.png")
 player_idle = pg.image.load("assets/sprites/Player_Idle.png")
 player_run = pg.image.load("assets/sprites/Player_Run.png")
 player_attack = pg.image.load("assets/sprites/Player_Attack.png")
@@ -61,9 +61,8 @@ slime_death = pg.image.load("assets/sprites/Slime_Death.png")
 player_death = pg.image.load("assets/sprites/Player_Death.png")
 death_screen = pg.image.load("assets/sprites/death_screen.png")
 
-
 # Player sprites
-player_size = player_run.get_width()//8
+player_size = player_idle.get_width()//12
 player_idle_sprites = load_sprite_sheet(player_idle, player_size, player_size)
 player_idle = []
 for i in range(len(player_idle_sprites)//4):
@@ -110,7 +109,7 @@ slime_death = []
 for i in range(len(slime_death_sprites)//4):
     slime_death.append(slime_death_sprites[i+10])
 
-# death screen
+# Death screen
 death_screen = pg.transform.scale(death_screen,(WIDTH,180)) 
 
 # Player dictionary to the animation
@@ -121,7 +120,6 @@ player_dict_attack = {
     "d": player_attack_d,
     "idle": player_attack_s
 }
-
 player_dict_run = {
     "w": player_run_w,
     "a": player_run_a,
@@ -133,6 +131,8 @@ player_dict_run = {
 # Set up variables
 grass_x = WIDTH / 2 - WIDTH
 grass_y = HEIGHT / 2 - HEIGHT
+grass_width = grass_img.get_width()
+grass_height = grass_img.get_height()
 
 tick = 0
 
@@ -162,20 +162,20 @@ alpha = 0
 # Set up the clock for a decent framerate
 clock = pg.time.Clock()
 
-# Main game loop
-running = True
-while running:
+game_loop = True
+# Main game loop #
+while game_loop:
     player_moving = "idle"
 
     ## Event loop (inputs) ##
     for event in pg.event.get():
         if event.type == pg.QUIT:
-            running = False
+            game_loop = False
         if event.type == pg.KEYDOWN: # cant hold down space to attack
             if event.key == pg.K_SPACE:
                 player_attacking = True
             if event.key == pg.K_ESCAPE:
-                running = False
+                game_loop = False
         
     keys = pg.key.get_pressed()
     
@@ -210,7 +210,6 @@ while running:
         ranint2 = 1
     else:
         ranint2 = 0
-
 
     # Slime spawn #
     if len(slimes) != slime_amount:
@@ -305,8 +304,9 @@ while running:
     screen.fill((0, 0, 0))
     for x in range(-1,1):
         for y in range(-1,1):
-            screen.blit(grass, (grass_x%grass.get_width() + grass.get_width()*x, grass_y%grass.get_height() + grass.get_height()*y))
-
+            temp_gass_x = grass_x%grass_width + grass_width*x
+            temp_gass_y = grass_y%grass_height + grass_height*y
+            screen.blit(grass_img, (temp_gass_x, temp_gass_y))
     # Slime #
     for s in slimes:
         if s.alive:
@@ -343,7 +343,6 @@ while running:
 
     pg.draw.rect(screen, (0,0,0), draw_health_back)
     pg.draw.rect(screen, health_bar_color, draw_health)
-
 
     # Update the display
     pg.display.flip()

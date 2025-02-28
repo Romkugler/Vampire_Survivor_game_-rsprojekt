@@ -1,0 +1,7 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+    \PYG{k}{for} \PYG{n}{x} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{:}
+        \PYG{k}{for} \PYG{n}{y} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{:}
+            \PYG{n}{temp\PYGZus{}gass\PYGZus{}x} \PYG{o}{=} \PYG{n}{grass\PYGZus{}x}\PYG{o}{\PYGZpc{}}\PYG{n}{grass\PYGZus{}width} \PYG{o}{+} \PYG{n}{grass\PYGZus{}width}\PYG{o}{*}\PYG{n}{x}
+            \PYG{n}{temp\PYGZus{}gass\PYGZus{}y} \PYG{o}{=} \PYG{n}{grass\PYGZus{}y}\PYG{o}{\PYGZpc{}}\PYG{n}{grass\PYGZus{}height} \PYG{o}{+} \PYG{n}{grass\PYGZus{}height}\PYG{o}{*}\PYG{n}{y}
+            \PYG{n}{screen}\PYG{o}{.}\PYG{n}{blit}\PYG{p}{(}\PYG{n}{grass\PYGZus{}img}\PYG{p}{,} \PYG{p}{(}\PYG{n}{temp\PYGZus{}gass\PYGZus{}x}\PYG{p}{,} \PYG{n}{temp\PYGZus{}gass\PYGZus{}y}\PYG{p}{)}\PYG{p}{)}
+\end{MintedVerbatim}

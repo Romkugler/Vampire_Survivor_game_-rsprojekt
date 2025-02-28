@@ -1,0 +1,22 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+    \PYG{k}{if} \PYG{n}{keys}\PYG{p}{[}\PYG{n}{pg}\PYG{o}{.}\PYG{n}{K\PYGZus{}w}\PYG{p}{]}\PYG{p}{:}
+        \PYG{n}{grass\PYGZus{}y} \PYG{o}{+}\PYG{o}{=} \PYG{n}{speed}
+        \PYG{n}{player\PYGZus{}moving} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{w}\PYG{l+s+s2}{\PYGZdq{}}
+        \PYG{k}{for} \PYG{n}{s} \PYG{o+ow}{in} \PYG{n}{slimes}\PYG{p}{:}
+            \PYG{n}{s}\PYG{o}{.}\PYG{n}{y} \PYG{o}{+}\PYG{o}{=} \PYG{n}{speed}
+     \PYG{k}{if} \PYG{n}{keys}\PYG{p}{[}\PYG{n}{pg}\PYG{o}{.}\PYG{n}{K\PYGZus{}s}\PYG{p}{]}\PYG{p}{:}
+        \PYG{n}{grass\PYGZus{}y} \PYG{o}{\PYGZhy{}}\PYG{o}{=} \PYG{n}{speed}
+        \PYG{n}{player\PYGZus{}moving} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{s}\PYG{l+s+s2}{\PYGZdq{}}
+        \PYG{k}{for} \PYG{n}{s} \PYG{o+ow}{in} \PYG{n}{slimes}\PYG{p}{:}
+            \PYG{n}{s}\PYG{o}{.}\PYG{n}{y} \PYG{o}{\PYGZhy{}}\PYG{o}{=} \PYG{n}{speed}
+    \PYG{k}{if} \PYG{n}{keys}\PYG{p}{[}\PYG{n}{pg}\PYG{o}{.}\PYG{n}{K\PYGZus{}a}\PYG{p}{]}\PYG{p}{:}
+        \PYG{n}{grass\PYGZus{}x} \PYG{o}{+}\PYG{o}{=} \PYG{n}{speed}
+        \PYG{n}{player\PYGZus{}moving} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{a}\PYG{l+s+s2}{\PYGZdq{}}
+        \PYG{k}{for} \PYG{n}{s} \PYG{o+ow}{in} \PYG{n}{slimes}\PYG{p}{:}
+            \PYG{n}{s}\PYG{o}{.}\PYG{n}{x} \PYG{o}{+}\PYG{o}{=} \PYG{n}{speed}
+    \PYG{k}{if} \PYG{n}{keys}\PYG{p}{[}\PYG{n}{pg}\PYG{o}{.}\PYG{n}{K\PYGZus{}d}\PYG{p}{]}\PYG{p}{:}
+        \PYG{n}{grass\PYGZus{}x} \PYG{o}{\PYGZhy{}}\PYG{o}{=} \PYG{n}{speed}
+        \PYG{n}{player\PYGZus{}moving} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{d}\PYG{l+s+s2}{\PYGZdq{}}
+        \PYG{k}{for} \PYG{n}{s} \PYG{o+ow}{in} \PYG{n}{slimes}\PYG{p}{:}
+            \PYG{n}{s}\PYG{o}{.}\PYG{n}{x} \PYG{o}{\PYGZhy{}}\PYG{o}{=} \PYG{n}{speed}
+\end{MintedVerbatim}

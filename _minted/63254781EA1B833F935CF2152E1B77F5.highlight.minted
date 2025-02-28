@@ -1,0 +1,11 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+    \PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{load\PYGZus{}sprite\PYGZus{}sheet}\PYG{p}{(}\PYG{n}{sheet}\PYG{p}{,} \PYG{n}{sprite\PYGZus{}width}\PYG{p}{,} \PYG{n}{sprite\PYGZus{}height}\PYG{p}{)}\PYG{p}{:}
+        \PYG{n}{sprites} \PYG{o}{=} \PYG{p}{[}\PYG{p}{]}
+        \PYG{k}{for} \PYG{n}{y} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{sheet}\PYG{o}{.}\PYG{n}{get\PYGZus{}height}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,} \PYG{n}{sprite\PYGZus{}height}\PYG{p}{)}\PYG{p}{:}
+            \PYG{k}{for} \PYG{n}{x} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{sheet}\PYG{o}{.}\PYG{n}{get\PYGZus{}width}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,} \PYG{n}{sprite\PYGZus{}width}\PYG{p}{)}\PYG{p}{:}
+                \PYG{n}{rect} \PYG{o}{=} \PYG{p}{(}\PYG{n}{x}\PYG{p}{,} \PYG{n}{y}\PYG{p}{,} \PYG{n}{sprite\PYGZus{}width}\PYG{p}{,} \PYG{n}{sprite\PYGZus{}height}\PYG{p}{)}
+                \PYG{n}{image} \PYG{o}{=} \PYG{n}{sheet}\PYG{o}{.}\PYG{n}{subsurface}\PYG{p}{(}\PYG{n}{rect}\PYG{p}{)}
+                \PYG{n}{image} \PYG{o}{=} \PYG{n}{pg}\PYG{o}{.}\PYG{n}{transform}\PYG{o}{.}\PYG{n}{scale}\PYG{p}{(}\PYG{n}{image}\PYG{p}{,} \PYG{p}{(}\PYG{n}{sprite\PYGZus{}width} \PYG{o}{*} \PYG{l+m+mi}{3}\PYG{p}{,} \PYG{n}{sprite\PYGZus{}height} \PYG{o}{*} \PYG{l+m+mi}{3}\PYG{p}{)}\PYG{p}{)}
+                \PYG{n}{sprites}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{image}\PYG{p}{)}
+        \PYG{k}{return} \PYG{n}{sprites}
+\end{MintedVerbatim}
